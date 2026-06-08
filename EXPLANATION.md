@@ -1,7 +1,7 @@
 # Detailed Explanation
 
 ## 1. Preprocessing
-As listed before, the **UTKFace dataset** was used in this project, but due to its uneven age distribution, some balancing was required before the training. The dataset is heavily skewed towards younger individuals, with significantly more 20 year olds than 80 year olds. To prevent the model from becoming biased, I utilized a **WeightedRandomSampler**. This ensured that the network saw an equal distribution of all **5 age classes** (0-20, 21-35, 36-55, 56-65, 65+) during training, effectively solving the imbalance issue.
+As listed before, the **UTKFace dataset** was used in this project, but due to its uneven age distribution, some balancing was required before the training. The dataset is heavily skewed towards younger individuals, with significantly more 20 year olds than 80 year olds. To prevent the model from becoming biased, I utilized a **WeightedRandomSampler**. This ensured that the network saw an equal distribution of all **5 age classes** (0-20, 21-35, 36-55, 56-65, 65+) during training, effectively solving the imbalance issue. Also because of the computing power that is needed to train a GAN from scratch, I had to lower the size of the of the pictures to 64x64 because my GPU couldn't handle it. 
 
 ## 2. Training
 As mentioned before, a custom **Conditional GAN (cGAN)** was built from scratch for the image generation part of this program. The training itself is an intense process where two models compete against each other for **100 epochs**. The **Generator** tries to create realistic faces, while the **Discriminator** tries to spot the fake ones. I trained the Generator with a learning rate of **0.0006** and the Discriminator with a learning rate of **0.00002**. The difference between may seem huge, but for me, when I tried to put them closer to each other, after a few epochs the Discriminator would be completely win over the Generator. Furthermore, to ensure the network doesn't generate a completely random face, an **L1 Reconstruction Loss** is applied. This forces the model to preserve the original identity and bone structure of the person, altering only the age-related features.
@@ -13,7 +13,7 @@ In this part of the program, the trained models are utilized to actually transfo
 Because of how complex and unstable GAN training can be, I implemented two technics. First, I used **Spectral Normalization** on the Discriminator to stabilize the training and prevent mode collapse. Secondly, because of how long the training takes, I used **checkpoints (saving every 5 epochs)** to ensure that if something went wrong, the progress always gets saved. It isn't completely necessary, but highly advised that you do the same when running this program.
 
 # Progression
-Here you can see how the program evolved over time.
+Here you can see how the program evolved over time along with its strenghts and weaknesses
 - **Epoch 1**
   <img width="977" height="665" alt="Epoch 1" src="https://github.com/user-attachments/assets/952ceb89-a9d7-4ad8-86ae-6568febd8972" />
 

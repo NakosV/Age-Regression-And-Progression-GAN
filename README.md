@@ -6,7 +6,7 @@ This repository contains the code of the project which is the following file:
 - **[`Conditional-GAN.py`](Conditional-GAN.py)**  
 
 # Some words about the program
-Unlike other GANs, this model doesn't just generate random faces. It has been specifically built to take the face of someone and show it in different ages. In order to insure that the program worked to some extend, I had to utilize an Encoder-Decoder architecture along with Spectral Normalization and custom data sampling. If you want to take a look under the hood and learn about the inner workings of the code in more detail as well as the progression of the program at different epochs**[you can click here.](DETAILS-ABOUT-THE-CODE.md)**
+Unlike other GANs, this model doesn't just generate random faces. It has been specifically built to take the face of someone and show it in different ages. In order to insure that the program worked to some extend, I had to utilize an Encoder-Decoder architecture along with Spectral Normalization and custom data sampling. If you want to take a look under the hood and learn about the inner workings of the code in more detail as well as the progression of the program at different epochs **[you can click here.](DETAILS-ABOUT-THE-CODE.md)**
 
 # Results
 Here you can see the results of the program. At the far right are the **original pictures**, next to them are the **reconstructions* and after that are the **reconstructions at the age groups 0-20, 21-35, 36-55, 56-65 and lastly 65+.**

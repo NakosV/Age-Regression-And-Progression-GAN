@@ -1,4 +1,3 @@
-# https://www.kaggle.com/datasets/jangedoo/utkface-new
 import os
 import re
 import glob
@@ -9,10 +8,9 @@ from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from torchvision import transforms
 from PIL import Image
 import matplotlib.pyplot as plt
-from torch.nn.utils.parametrizations import spectral_norm # για stabilization του Discriminator
+from torch.nn.utils.parametrizations import spectral_norm
 from collections import Counter
 
-device = torch.device ("cuda" if torch.cuda.is_available() else "cpu")
 batch_size = 32
 epoch_number = 100
 latent_dimension = 512
@@ -20,20 +18,22 @@ number_of_classes = 5
 img_size = 64
 learning_rate_G = 0.0006
 learning_rate_D = 0.00002
-lambda_recon = 30
+lambda_recon = 30 
 number_of_workers = 4
 
-data_dir = "/home/nakos/Desktop/Neural Networks/GAN/data/UTKFace"
-saving_dir = "/home/nakos/Desktop/Neural Networks/GAN/model/checkpoints/GAN_final_checkpoints"
-output_dir = "/home/nakos/Desktop/Neural Networks/GAN/model/outputs/GAN_final_outputs"
+data_dir = "where/ypur/dataset/is"
+saving_dir = "where/the/chechpoints/get/saved"
+output_dir = "where/the/output/gets/saved"
 os.makedirs(saving_dir, exist_ok = True)
 os.makedirs(output_dir, exist_ok = True)
+device = torch.device ("cuda" if torch.cuda.is_available() else "cpu")
 
 class UTKDataset(Dataset):
     def __init__(self, data_dir, transform = None):
         self.dataset_path = data_dir
         self.transform = transform
 
+        # How the program gets the age of the person
         pattern = re.compile(r"^(\d+)_\d+_\d+_\d+\.jpg\.chip\.jpg$", re.IGNORECASE)
         self.samples = []
         for i in os.listdir(data_dir):
@@ -63,7 +63,8 @@ class UTKDataset(Dataset):
         if self.transform:
             image = self.transform(image)
         return image, label
-    
+
+# Some image augmentation to make the model more robust
 transform = transforms.Compose([
     transforms.Resize((img_size, img_size)),
     transforms.RandomHorizontalFlip(),
@@ -72,14 +73,15 @@ transform = transforms.Compose([
     
 dataset = UTKDataset(data_dir = data_dir, transform = transform)
 
+# I calculate the weights of ages in order to give the program even amounts of the faces
 label_counts = Counter(label for _, label in dataset.samples)
 class_weights = {cls: 1.0 / count for cls, count in label_counts.items()}
 sample_weights = torch.tensor([class_weights[label] for _, label in dataset.samples], dtype = torch.float)
 sampler = WeightedRandomSampler(weights = sample_weights, num_samples = len(sample_weights), replacement = True)
 dataloader = DataLoader(dataset, batch_size = batch_size, sampler = sampler, num_workers = number_of_workers, pin_memory = True, drop_last = True)
 
-# Blocks
-# Δύο Conv Layers για να κάνω πιο δυνατό τον G
+# The Blocks
+# Two Conv Layers to make the Generator stronger
 def upsample_block(in_channels, out_channels):
     return nn.Sequential(
         nn.Upsample(scale_factor = 2, mode = 'bilinear', align_corners = False),
@@ -100,6 +102,7 @@ def downsample_block(in_channels, out_channels):
         nn.LeakyReLU(0.2, inplace = True),)
 
 class Encoder(nn.Module):
+    # It takes the identity from the original face without the age
     def __init__(self):
         super(Encoder, self).__init__()
         self.model = nn.Sequential(
@@ -119,6 +122,7 @@ class Encoder(nn.Module):
         return self.model(img)
     
 class Generator(nn.Module):
+    # It fuses the identity with the target age to generate a new face
     def __init__(self):
         super(Generator, self).__init__()
         self.label_emb = nn.Embedding(number_of_classes, embedding_dim = 128)
@@ -250,7 +254,7 @@ def show_results(epoch):
     generator.eval()
     
     fig, axes = plt.subplots(5, 7, figsize = (20, 14))
-    fig.suptitle(f"Αποτέλεσμα Εποχής {epoch}\n" "[Πραγματική | Recon | 0-20 | 21-35 | 36-55 | 56-65 | 65+ ]", fontsize = 13)
+    fig.suptitle(f"Results of Epoch {epoch}\n" "[Real | Reconstruction | 0-20 | 21-35 | 36-55 | 56-65 | 65+ ]", fontsize = 13)
     
     with torch.no_grad():
         for i in range(5):
@@ -278,7 +282,6 @@ def show_results(epoch):
     save_path = os.path.join(output_dir, f"epoch_{epoch:04d}.png")
     plt.savefig(save_path, dpi = 100, bbox_inches = 'tight')
     plt.close(fig)
-    print(f"Το grid αποθηκεύτηκε στο: {save_path}")
     
     encoder.train()
     generator.train()
@@ -288,17 +291,17 @@ existing_checkpoints = find_the_checkpoints()
 
 if existing_checkpoints:
     latest_checkpoint = existing_checkpoints[-1]
-    print(f"\nΒρέθηκε αυτό το checkpoint: {os.path.basename(latest_checkpoint)}")
-    answer = input("Θέλεις να συνιχίσεις το training του προγράμματος από εκεί? (yes/no)").strip().lower()
+    print(f"\n Checkpoint: {os.path.basename(latest_checkpoint)}")
+    answer = input("Do you want to continue from that checkpoint? (yes/no)").strip().lower()
     if answer == 'yes':
         starting_epoch = load_checkpoint(latest_checkpoint)
     else:
-        print("Ξεκινά το training από την αρχή")
+        print("Training starting from scratch")
 else:
-    print("Δε βρέθηκαν checkpoints. Ξεκινά το training από την αρχή")
+    print("No checkpoints, starting from scratch")
     
 # Training
-print(f"Ξεκινά η εκπαίδευση από την εποχή {starting_epoch + 1}\n")
+print(f"The training starts from epoch {starting_epoch + 1}\n")
 for epoch in range(starting_epoch, epoch_number):
     epoch_d, epoch_g, epoch_recon = 0.0, 0.0, 0.0
     for i, (real_imgs, labels) in enumerate(dataloader):
@@ -344,7 +347,6 @@ for epoch in range(starting_epoch, epoch_number):
     if (epoch + 1) % 5 == 0 or epoch == 0:
         checkpoints(epoch + 1, avg_d, avg_g)
         show_results(epoch +1)
-print("\n Το traiing τελείωσε")
 
 # Results
 def inference(num_samples = 5):
@@ -355,7 +357,7 @@ def inference(num_samples = 5):
     imgs = imgs[:num_samples].to(device)
     labels = labels[:num_samples].to(device)
     fig, axes = plt.subplots(num_samples, number_of_classes + 2, figsize = (3 * (number_of_classes + 2), 3 * num_samples))
-    fig.suptitle("Αυτόματη Μετατροπή Ηλικιών", fontsize = 16, fontweight = 'bold')
+    fig.suptitle("Ages", fontsize = 16, fontweight = 'bold')
     
     with torch.no_grad():
         for i in range(num_samples):
@@ -364,10 +366,10 @@ def inference(num_samples = 5):
             z = encoder(img)
             recon = generator(z, torch.tensor([original_lbl], device = device))
             axes[i, 0].imshow(to_img(img))
-            axes[i, 0].set_title(f"Πρώτυπο\n({classes[original_lbl]})", fontweight = 'bold')
+            axes[i, 0].set_title(f"Original\n({classes[original_lbl]})", fontweight = 'bold')
             axes[i, 0].axis('off')
             axes[i, 1].imshow(to_img(recon))
-            axes[i, 1].set_title("Ανακατασκευή", fontweight = 'bold')
+            axes[i, 1].set_title("Reconstruction", fontweight = 'bold')
             axes[i, 1].axis('off')
             
             for t in range(number_of_classes):
@@ -381,6 +383,5 @@ def inference(num_samples = 5):
     final_path = os.path.join(output_dir, "inference.png")
     plt.savefig(final_path, dpi = 150, bbox_inches = 'tight')
     plt.close(fig)
-    print(f"Το τελικό grid αποθηκεύτηκε εδώ: {final_path}")
 
 inference()

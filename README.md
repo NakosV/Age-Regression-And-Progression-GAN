@@ -10,6 +10,7 @@ Unlike other GANs, this model doesn't just generate random faces. It has been sp
 
 # Results
 Here you can see the results of the program. At the far right are the **original pictures**, next to them are the **reconstructions* and after that are the **reconstructions at the age groups 0-20, 21-35, 36-55, 56-65 and lastly 65+.**
+-----------------------------------------------------------
 <img width="3060" height="2212" alt="Results" src="https://github.com/user-attachments/assets/33938f38-892f-405e-91c8-c030c49540d5" />
 
 # Useful Links

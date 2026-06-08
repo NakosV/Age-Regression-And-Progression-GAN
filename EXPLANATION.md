@@ -14,16 +14,20 @@ Because of how complex and unstable GAN training can be, I implemented two techn
 
 # Progression
 Here you can see how the program evolved over time.
- - Epoch 1
-<img width="977" height="665" alt="Epoch 1" src="https://github.com/user-attachments/assets/952ceb89-a9d7-4ad8-86ae-6568febd8972" />
- - Epoch 20
-<img width="981" height="664" alt="Epoch 20" src="https://github.com/user-attachments/assets/e93cad26-8299-479c-b225-e0d1ccf83bc8" />
- - Epoch 50
-<img width="979" height="658" alt="Epoch 50" src="https://github.com/user-attachments/assets/166219f1-f061-4e41-b513-ad501232aa54" />
- - Epoch 80
-<img width="979" height="659" alt="Epoch 80" src="https://github.com/user-attachments/assets/2b5e7ee1-6ced-49e0-9920-e920481d072b" />
- - Epoch 100
-<img width="979" height="657" alt="Epoch 100" src="https://github.com/user-attachments/assets/7ee157b5-d89f-4ed1-bc70-4bc1532c4f7f" />
+- **Epoch 1**
+  <img width="977" height="665" alt="Epoch 1" src="https://github.com/user-attachments/assets/952ceb89-a9d7-4ad8-86ae-6568febd8972" />
+
+- **Epoch 20**
+  <img width="981" height="664" alt="Epoch 20" src="https://github.com/user-attachments/assets/e93cad26-8299-479c-b225-e0d1ccf83bc8" />
+
+- **Epoch 50**
+  <img width="979" height="658" alt="Epoch 50" src="https://github.com/user-attachments/assets/166219f1-f061-4e41-b513-ad501232aa54" />
+
+- **Epoch 80**
+  <img width="979" height="659" alt="Epoch 80" src="https://github.com/user-attachments/assets/2b5e7ee1-6ced-49e0-9920-e920481d072b" />
+
+- **Epoch 100**
+  <img width="979" height="657" alt="Epoch 100" src="https://github.com/user-attachments/assets/7ee157b5-d89f-4ed1-bc70-4bc1532c4f7f" />
 
 # Final Words
 On my machine, the training of this GAN took a significant amount of time to run, mainly because generating high-quality images from scratch is a very heavy process. The run time and the success of the program are mainly based on the machine of the user and the hyperparameters fed to the program. I highly recommend everyone to play around with the variables and the datasets given to the program to see how the generated faces change.
